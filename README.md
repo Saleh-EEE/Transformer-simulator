@@ -12,7 +12,7 @@ It includes input parameters, calculated electrical results, equivalent circuit 
 
 ## Features
 
-### 1. Transformer Types
+### Transformer Types
 
 The simulator supports three transformer modes:
 
@@ -24,7 +24,7 @@ Each mode updates the input fields, calculations, and circuit representation acc
 
 ---
 
-### 2. Input Parameters
+### Input Parameters
 
 Users can enter transformer and load parameters such as:
 
@@ -41,6 +41,9 @@ Users can enter transformer and load parameters such as:
 * Autotransformer winding turns
 
 ---
+### Circuit Diagram
+![Equivalent Circuit](Assets/Equivalent_circuit.png)
+![Autotransformer Step Up](Assets/Autotransformer_Step_up.png)
 
 ## Calculation Methodology
 
