@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transformer Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div>
+<div class="bg-glow g2"></div>
+
+<div class="wrapper">
+
+  <header>
+    <h1>Transformer <span class="accent">Simulator</span></h1>
+    <p class="subtitle">Single-phase · Autotransformer · 3-Phase</p>
+  </header>
+<div class="type-selector">
+    <button class="type-btn active" data-type="single" onclick="setType('single')">
+      <span class="type-icon"></span> Single Phase
+    </button>
+    <button class="type-btn" data-type="auto" onclick="setType('auto')">
+      <span class="type-icon"></span> Autotransformer
+    </button>
+    <button class="type-btn" data-type="three" onclick="setType('three')">
+      <span class="type-icon"></span> 3-Phase
+    </button>
+  </div>
+<div class="tabs-bar">
+    <button class="tab active" data-tab="0" onclick="switchTab(0)">
+      <span class="tab-icon"></span> Inputs &amp; Results
+    </button>
+    <button class="tab" data-tab="1" onclick="switchTab(1)">
+      <span class="tab-icon"></span> Circuit &amp; Phasor
+    </button>
+    <button class="tab" data-tab="2" onclick="switchTab(2)">
+      <span class="tab-icon"></span> Flux Simulation
+    </button>
+  </div>
+<div class="tab-panel active" id="tab0">
+    <div class="main-layout">
+<div class="panel inputs-panel">
+        <div class="panel-header">
+          <span class="panel-dot c1"></span>
+          <span class="panel-dot c2"></span>
+          <span class="panel-dot c3"></span>
+          <span class="panel-title">Parameters</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="section-label">Source</div>
+          <div class="input-row">
+            <div class="field">
+              <label>Primary Voltage V<sub>P</sub> <span class="unit">(V, rms)</span></label>
+              <input type="number" id="vp" value="2300" step="any">
+            </div>
+            <div class="field">
+              <label>Frequency <span class="unit">(Hz)</span></label>
+              <input type="number" id="freq" value="60" step="any">
+            </div>
+          </div>
+<div id="turnsSection">
+            <div class="section-label">Turns Ratio</div>
+            <div class="input-row">
+              <div class="field">
+                <label>N<sub>P</sub> (primary turns)</label>
+                <input type="number" id="np" value="100" step="any">
+              </div>
+              <div class="field">
+                <label>N<sub>S</sub> (secondary turns)</label>
+                <input type="number" id="ns" value="10" step="any">
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">Series Impedances (referred to primary)</div>
+          <div class="input-row">
+            <div class="field">
+              <label>R<sub>eq</sub> <span class="unit">(Ω)</span></label>
+              <input type="number" id="req" value="38.4" step="any">
+            </div>
+            <div class="field">
+              <label>X<sub>eq</sub> <span class="unit">(Ω)</span></label>
+              <input type="number" id="xeq" value="192" step="any">
+            </div>
+          </div>
+
+          <div class="section-label">Excitation Branch (referred to primary)</div>
+          <div class="toggle-row">
+            <label class="toggle-label">Include excitation branch (R<sub>C</sub> &amp; X<sub>M</sub>)</label>
+            <label class="toggle">
+              <input type="checkbox" id="useExcitation" onchange="toggleExcitation()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="input-row" id="excitationFields" style="display:none">
+            <div class="field">
+              <label>R<sub>C</sub> <span class="unit">(Ω)</span></label>
+              <input type="number" id="rc" value="159000" step="any">
+            </div>
+            <div class="field">
+              <label>X<sub>M</sub> <span class="unit">(Ω)</span></label>
+              <input type="number" id="xm" value="38400" step="any">
+            </div>
+          </div>
+
+          <div class="section-label">Load</div>
+          <div class="input-row">
+            <div class="field">
+              <label>R<sub>L</sub> <span class="unit">(Ω)</span></label>
+              <input type="number" id="rl" value="200" step="any">
+            </div>
+            <div class="field">
+              <label>X<sub>L</sub> <span class="unit">(Ω, + lag / − lead)</span></label>
+              <input type="number" id="xl" value="150" step="any">
+            </div>
+          </div>
+<div id="autoSection" style="display:none">
+            <div class="section-label">Autotransformer Mode</div>
+            <div class="toggle-row">
+              <span class="toggle-label" id="autoModeLabel">Step-Up (V<sub>out</sub> &gt; V<sub>in</sub>)</span>
+              <label class="toggle">
+                <input type="checkbox" id="autoStepDown" onchange="toggleAutoMode()">
+                <span class="slider slider-warn"></span>
+              </label>
+            </div>
+            <div class="info-box" id="autoModeInfo" style="display:none"></div>
+            <div class="section-label">Winding Turns</div>
+            <div class="input-row">
+              <div class="field">
+                <label>N<sub>C</sub> <span class="unit">(common winding)</span></label>
+                <input type="number" id="nc" value="200" step="any">
+              </div>
+              <div class="field">
+                <label>N<sub>SE</sub> <span class="unit">(series winding)</span></label>
+                <input type="number" id="nse" value="800" step="any">
+              </div>
+            </div>
+          </div>
+<div id="threePhaseSection" style="display:none">
+            <div class="section-label">3-Phase Connection</div>
+            <div class="select-row">
+              <div class="field">
+                <label>Primary Connection</label>
+                <select id="primaryConn">
+                  <option value="Y">Y (Wye)</option>
+                  <option value="D">Δ (Delta)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Secondary Connection</label>
+                <select id="secondaryConn">
+                  <option value="Y">Y (Wye)</option>
+                  <option value="D">Δ (Delta)</option>
+                </select>
+              </div>
+            </div>
+            <div class="info-box">
+              V<sub>P</sub> above is the <strong>line voltage</strong>. Per-phase analysis is performed internally.
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calculate()">
+            <span class="btn-icon">▶</span> Calculate
+          </button>
+
+        </div>
+      </div>
+<div class="panel outputs-panel">
+        <div class="panel-header">
+          <span class="panel-dot c1"></span>
+          <span class="panel-dot c2"></span>
+          <span class="panel-dot c3"></span>
+          <span class="panel-title">Results</span>
+        </div>
+
+        <div id="results-placeholder" class="placeholder-msg">
+          Set parameters and click <strong>Calculate</strong><br>to see results here.
+        </div>
+
+        <div id="results-content" style="display:none">
+          <div class="panel-body">
+            <div class="results-grid" id="resultsGrid"></div>
+            <div class="section-label mt16">Power Summary</div>
+            <div id="powerSummary" class="power-table"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+<div class="tab-panel" id="tab1" style="display:none">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-dot c1"></span>
+        <span class="panel-dot c2"></span>
+        <span class="panel-dot c3"></span>
+        <span class="panel-title">Circuit &amp; Phasor Diagrams</span>
+      </div>
+      <div id="diagrams-placeholder" class="placeholder-msg">
+        Run a calculation first to generate diagrams.
+      </div>
+      <div id="diagrams-content" style="display:none">
+        <div class="panel-body">
+          <div class="section-label" style="margin-top:0">Approximate Equivalent Circuit (referred to primary)</div>
+          <canvas id="circuitCanvas" height="280"></canvas>
+          <div class="section-label mt16">Phasor Diagram (secondary side)</div>
+          <canvas id="phasorCanvas" height="420"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="tab-panel" id="tab2" style="display:none">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-dot c1"></span>
+        <span class="panel-dot c2"></span>
+        <span class="panel-dot c3"></span>
+        <span class="panel-title">Magnetic Flux Simulation</span>
+      </div>
+      <div class="panel-body">
+
+        <canvas id="fluxCanvas" height="400" style="border:1px solid var(--border);border-radius:var(--radius-sm)"></canvas>
+
+        <div class="flux-controls">
+          <div class="field">
+            <label>Animation Speed</label>
+            <input type="range" id="fluxSpeed" min="0.5" max="4" step="0.1" value="1.5" oninput="updateFluxParams()">
+            <span class="range-val" id="fluxSpeedVal">1.5×</span>
+          </div>
+          <div class="field">
+            <label>Load Level <span class="unit">(affects leakage)</span></label>
+            <input type="range" id="loadLevel" min="0.1" max="1" step="0.05" value="0.5" oninput="updateFluxParams()">
+            <span class="range-val" id="loadLevelVal">50%</span>
+          </div>
+          <div class="field">
+            <label>Core Saturation</label>
+            <input type="range" id="satLevel" min="0" max="1" step="0.05" value="0.3" oninput="updateFluxParams()">
+            <span class="range-val" id="satLevelVal">30%</span>
+          </div>
+        </div>
+
+        <div class="flux-legend">
+          <span class="leg-item"><span class="leg-swatch" style="background:#00d4ff"></span>Mutual flux (core)</span>
+          <span class="leg-item"><span class="leg-swatch" style="background:#f59e0b"></span>Primary leakage</span>
+          <span class="leg-item"><span class="leg-swatch" style="background:#a78bfa"></span>Secondary leakage</span>
+          <span class="leg-item"><span class="leg-swatch" style="background:#10b981"></span>Resultant EMF</span>
+        </div>
+
+        <div class="section-label mt16">Live Flux Parameters</div>
+        <div id="fluxStats" class="flux-stats"></div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
